@@ -1,4 +1,4 @@
-collectd-openstack
+Prometheus Openstack Exporter
 ============
 
 Image for a prometheus exporter for openstack API derived metrics.
