@@ -42,13 +42,13 @@ class NeutronAgentStats(OSBase):
             for state in self.osclient.states:
                 prct = (100.0 * aggregated_agents[service][state]) / totala
                 stats.append({
-                    'stat_name': 'neutron_agents_percent',
+                    'stat_name': "services_{}_{}_percent".format(service,state),
                     'stat_value': prct,
                     'service': service, 
                     'state': state
                 })
                 stats.append({
-                    'stat_name': 'neutron_agents',
+                    'stat_name': "services_{}_{}_total".format(service,state),
                     'stat_value': aggregated_agents[service][state],
                     'service': service, 
                     'state': state,

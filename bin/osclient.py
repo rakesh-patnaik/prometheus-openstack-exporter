@@ -34,7 +34,7 @@ class OSClient(object):
     It uses the Keystone service catalog to discover the API endpoints.
     """
     EXPIRATION_TOKEN_DELTA = datetime.timedelta(0, 30)
-    states = {'up': 0, 'down': 1, 'disabled': 2}
+    states = {'up': 1, 'down': 0, 'disabled': 2}
 
     def __init__(self,keystone_url, password, tenant_name, username, user_domain, region, timeout, retries):
         self.keystone_url = keystone_url
@@ -266,6 +266,6 @@ class OSClient(object):
                             logger.warning(msg)
                             continue
                     data['stat_value'] = self.states[data['state']]
-                    data['stat_name'] = "{}_{}".format(service, entry)
+                    data['stat_name'] = "services_{}_{}".format(service, val['binary'])
                     worker_metrics.append(data)
         return worker_metrics

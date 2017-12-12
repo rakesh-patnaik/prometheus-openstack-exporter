@@ -40,13 +40,13 @@ class CinderServiceStats(OSBase):
             for state in self.osclient.states:
                 prct = (100.0 * aggregated_workers[service][state]) / totalw
                 stats.append({
-                    'stat_name': 'cinder_services_percent',
+                    'stat_name': "services_{}_{}_percent".format(service,state),
                     'stat_value': prct,
                     'state': state, 
                     'service': service
                 })
                 stats.append( {
-                    'stat_name': 'cinder_services',
+                    'stat_name': "services_{}_{}_total".format(service,state),
                     'stat_value': aggregated_workers[service][state],
                     'state': state, 
                     'service': service

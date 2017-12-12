@@ -24,9 +24,8 @@ class CheckOSApi(OSBase):
     """Class to check the status of OpenStack API services."""
 
     CHECK_MAP = {
-        'keystone': {
-        'heat': {'path': '/', 'expect': [300], 'name': 'heat-api'},
-            'path': '/', 'expect': [300], 'name': 'keystone-public-api'},
+        'keystone': { 'path': '/', 'expect': [300], 'name': 'keystone-public-api'},
+        'heat': {'path': '/', 'expect': [300], 'name': 'heat-api'},            
         'heat-cfn': {'path': '/', 'expect': [300], 'name': 'heat-cfn-api'},
         'glance': {'path': '/', 'expect': [300], 'name': 'glance-api'},
         'cinder': {'path': '/', 'expect': [200, 300], 'name': 'cinder-api'},
@@ -45,7 +44,9 @@ class CheckOSApi(OSBase):
         'mistral': {'path': '/', 'expect': [200, 300], 'name': 'mistral-api'},
         'designate': {'path': '/', 'expect': [200, 300], 'name': 'designate-api'},
         'contrail_analytics': {'path': '/', 'expect': [200], 'name': 'contrail-analytics-api'},
-        'contrail_config': {'path': '/', 'expect': [200], 'name': 'contrail-config-api'}
+        'contrail_config': {'path': '/', 'expect': [200], 'name': 'contrail-config-api'},
+        'congress': {'path': '/', 'expect': [200], 'name': 'congress-api'},
+        'placement': {'path': '/', 'expect': [401], 'name': 'placement-api'},
     }
 
     def _service_url(self, endpoint, path):
@@ -67,7 +68,7 @@ class CheckOSApi(OSBase):
         for service in catalog:
             name = service['name']
             url = None
-            status_code = 'NA'
+            status_code = 500
             if name not in self.CHECK_MAP:
                 logger.info(
                     "No check found for service '%s', skipping it" % name)
@@ -94,7 +95,7 @@ class CheckOSApi(OSBase):
                     status = self.OK
 
             check_array.append({
-                'service': check.get('name', name),
+                'service': name,
                 'status': status,
                 'url': url,
                 'status_code': status_code,
@@ -108,12 +109,13 @@ class CheckOSApi(OSBase):
     
     def get_stats(self):
         registry = CollectorRegistry()
-        labels = ['region', 'url', 'status_code', 'service']
+        labels = ['region', 'url', 'service']
         check_api_data_cache = self.get_cache_data()
         for check_api_data in check_api_data_cache:
-            label_values = [check_api_data['region'], check_api_data['url'], check_api_data['status_code'], check_api_data['service']]
-            check_gauge = Gauge('check_openstack_api',
-                         'Openstack API check fail = 0, ok = 1 and unknown = 3',
+            label_values = [check_api_data['region'], check_api_data['url'], check_api_data['service']]
+            gague_name = self.gauge_name_sanitize("check_{}_api".format(check_api_data['service']))
+            check_gauge = Gauge(gague_name,
+                         'Openstack API check. fail = 0, ok = 1 and unknown = 2',
                          labels, registry=registry)
             check_gauge.labels(*label_values).set(check_api_data['status'])
         return generate_latest(registry)

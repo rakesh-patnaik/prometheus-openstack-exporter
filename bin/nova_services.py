@@ -36,8 +36,7 @@ class NovaServiceStats(OSBase):
             state = worker['state']
             aggregated_workers[service][state] += 1
 
-        for service in set(aggregated_workers.keys()).union(
-                ('compute', 'scheduler', 'conductor', 'cert', 'consoleauth')):
+        for service in aggregated_workers:
             total = sum(aggregated_workers[service].values())
             for state in self.osclient.states:
                 prct = 0
@@ -45,13 +44,13 @@ class NovaServiceStats(OSBase):
                     prct = (100.0 * aggregated_workers[service][state]) / total
 
                 stats.append({
-                    'stat_name': 'nova_services_percent',
+                    'stat_name': "services_{}_{}_percent".format(service,state),
                     'stat_value': prct,
                     'state': state, 
                     'service': service
                 })
                 stats.append({
-                    'stat_name': 'nova_services',
+                    'stat_name': "services_{}_{}_total".format(service,state),
                     'stat_value': aggregated_workers[service][state],
                     'state': state, 
                     'service': service
