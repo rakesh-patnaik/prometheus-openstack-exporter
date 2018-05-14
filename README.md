@@ -1,4 +1,4 @@
-Prometheus Openstack Exporter
+Prometheus Openstack Exporter(DEPRECATED: moved to https://github.com/att-comdev/prometheus-openstack-exporter)
 ============
 
 Image for a prometheus exporter for openstack API derived metrics.
